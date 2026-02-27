@@ -1,0 +1,26 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Env files
+.env
+**/.env
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Docker
+**/*-data/
