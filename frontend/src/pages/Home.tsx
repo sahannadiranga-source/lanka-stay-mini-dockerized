@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiGet } from "../api/client";
 import type { Hotel } from "../types/hotel";
+import { Link } from "react-router-dom";
 
 const mockHotels: Hotel[] = [
   { id: "1", name: "Ocean View Hotel", location: "Galle", description: "Near the beach" },
@@ -38,7 +39,11 @@ export default function Home() {
       <div style={{ display: "grid", gap: 12 }}>
         {hotels.map((h) => (
           <div key={h.id} style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-            <h2 style={{ margin: 0 }}>{h.name}</h2>
+            <h2 style={{ margin: 0 }}>
+                <Link to={`/hotels/${h.id}`} style={{ color: "black", textDecoration: "none" }}>
+                    {h.name}
+                </Link>
+                </h2>
             <p style={{ margin: "6px 0" }}><b>Location:</b> {h.location}</p>
             {h.description && <p style={{ margin: 0 }}>{h.description}</p>}
           </div>
