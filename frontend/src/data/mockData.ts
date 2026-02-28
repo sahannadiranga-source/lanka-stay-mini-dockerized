@@ -1,5 +1,45 @@
 import type { Hotel } from "../types/hotel";
 import type { Room } from "../types/room";
+import type { Booking } from "../types/booking";
+
+export const mockBookings: Booking[] = [
+  {
+    id: "b1",
+    roomId: "r1",
+    guestName: "Sahan",
+    email: "sahan@example.com",
+    phone: "07X1234567",
+    checkIn: "2026-03-05",
+    checkOut: "2026-03-07",
+    totalPrice: 36000,
+    status: "CONFIRMED",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "b2",
+    roomId: "r3",
+    guestName: "Alex",
+    email: "alex@example.com",
+    phone: null,
+    checkIn: "2026-03-10",
+    checkOut: "2026-03-12",
+    totalPrice: 50000,
+    status: "CONFIRMED",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "b3",
+    roomId: "r2",
+    guestName: "Nimal",
+    email: "nimal@example.com",
+    phone: "07X9999999",
+    checkIn: "2026-03-01",
+    checkOut: "2026-03-02",
+    totalPrice: 12000,
+    status: "CANCELLED",
+    createdAt: new Date().toISOString(),
+  },
+];
 
 export const mockHotels: Hotel[] = [
   { id: "1", name: "Ocean View Hotel", location: "Galle", description: "Near the beach" },
