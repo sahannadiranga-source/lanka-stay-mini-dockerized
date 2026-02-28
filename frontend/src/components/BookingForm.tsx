@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Room } from "../types/room";
+import { createBooking } from "../api/bookings";
 
 function nightsBetween(checkIn: string, checkOut: string) {
   const a = new Date(checkIn);
@@ -28,28 +29,31 @@ export default function BookingForm({
   const nights = useMemo(() => nightsBetween(checkIn, checkOut), [checkIn, checkOut]);
   const total = useMemo(() => Math.max(0, nights) * room.pricePerNight, [nights, room.pricePerNight]);
 
-  function submit() {
-    setError(null);
+async function submit() {
+  setError(null);
 
-    if (!guestName.trim()) return setError("Guest name is required.");
-    if (!email.trim()) return setError("Email is required.");
-    if (!checkIn || !checkOut) return setError("Check-in and check-out dates are required.");
-    if (new Date(checkOut) <= new Date(checkIn)) return setError("Check-out must be after check-in.");
-    if (nights <= 0) return setError("Booking must be at least 1 night.");
+  if (!guestName.trim()) return setError("Guest name is required.");
+  if (!email.trim()) return setError("Email is required.");
+  if (!checkIn || !checkOut) return setError("Check-in and check-out dates are required.");
+  if (new Date(checkOut) <= new Date(checkIn)) return setError("Check-out must be after check-in.");
+  if (nights <= 0) return setError("Booking must be at least 1 night.");
 
-    // For now: just simulate success. Later we will call backend POST /api/bookings
-    console.log("Booking payload:", {
+  try {
+    await createBooking({
       roomId: room.id,
-      guestName,
-      email,
-      phone,
+      guestName: guestName.trim(),
+      email: email.trim(),
+      phone: phone.trim() ? phone.trim() : null,
       checkIn,
       checkOut,
-      totalPrice: total,
     });
 
-    onSuccess();
+    onSuccess(); // ✅ only once
+  } catch (e: any) {
+    const msg = e?.message ?? "Booking failed.";
+    setError(msg.includes("409") ? "Room is not available for those dates." : msg);
   }
+}
 
   return (
     <div
