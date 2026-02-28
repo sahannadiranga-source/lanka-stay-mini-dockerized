@@ -1,13 +1,14 @@
 using HotelBooking.Api.Data;
 using HotelBooking.Api.DTOs;
 using Microsoft.EntityFrameworkCore;
+using HotelBooking.Api.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     var cs = builder.Configuration.GetConnectionString("Default");
@@ -74,8 +75,11 @@ app.MapGet("/api/hotels/{id:guid}/rooms", async (Guid id, AppDbContext db) =>
     return Results.Ok(rooms);
 });
 
-app.MapGet("/api/bookings", async (Guid? hotelId, AppDbContext db) =>
+app.MapGet("/api/bookings", async (HttpRequest req, Guid? hotelId, AppDbContext db, IConfiguration cfg) =>
 {
+    if (!AdminAuth.IsAdmin(req, cfg))
+        return Results.Unauthorized();
+
     var q = db.Bookings.AsQueryable();
 
     if (hotelId.HasValue && hotelId.Value != Guid.Empty)

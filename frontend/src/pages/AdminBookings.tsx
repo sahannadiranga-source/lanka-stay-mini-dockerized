@@ -19,7 +19,7 @@ export default function AdminBookings() {
         setLoading(true);
         const [hotelsData, bookingsData] = await Promise.all([
           apiGet<Hotel[]>("/api/hotels"),
-          apiGet<Booking[]>("/api/bookings"),
+          apiGet<Booking[]>("/api/bookings", true),
         ]);
 
         setHotels(hotelsData);
