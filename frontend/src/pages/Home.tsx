@@ -1,37 +1,36 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { apiGet } from "../api/client";
 import type { Hotel } from "../types/hotel";
-import { Link } from "react-router-dom";
-
-const mockHotels: Hotel[] = [
-  { id: "1", name: "Ocean View Hotel", location: "Galle", description: "Near the beach" },
-  { id: "2", name: "City Stay", location: "Colombo", description: "Central location" },
-  { id: "3", name: "Hilltop Resort", location: "Nuwara Eliya", description: "Cool climate views" },
-];
 
 export default function Home() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        // backend will provide this later
+        setLoading(true);
         const data = await apiGet<Hotel[]>("/api/hotels");
         setHotels(data);
-      } catch {
-        // fallback until backend is ready
-        setHotels(mockHotels);
-        setError("Backend not connected yet. Showing mock data.");
+        setError(null);
+      } catch (e: any) {
+        setError(e?.message ?? "Failed to load hotels.");
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: 16 }}>
+    <div>
       <h1>Hotels</h1>
+
+      {loading && <div style={{ padding: 12 }}>Loading...</div>}
+
       {error && (
-        <div style={{ padding: 12, background: "#fff3cd", borderRadius: 8, marginBottom: 12 }}>
+        <div style={{ padding: 12, background: "#f8d7da", borderRadius: 10, marginBottom: 12 }}>
           {error}
         </div>
       )}
@@ -40,11 +39,13 @@ export default function Home() {
         {hotels.map((h) => (
           <div key={h.id} style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
             <h2 style={{ margin: 0 }}>
-                <Link to={`/hotels/${h.id}`} style={{ color: "black", textDecoration: "none" }}>
-                    {h.name}
-                </Link>
-                </h2>
-            <p style={{ margin: "6px 0" }}><b>Location:</b> {h.location}</p>
+              <Link to={`/hotels/${h.id}`} style={{ color: "black", textDecoration: "none" }}>
+                {h.name}
+              </Link>
+            </h2>
+            <p style={{ margin: "6px 0" }}>
+              <b>Location:</b> {h.location}
+            </p>
             {h.description && <p style={{ margin: 0 }}>{h.description}</p>}
           </div>
         ))}
