@@ -38,13 +38,13 @@ export default function AdminLayout() {
           }}
         >
           <NavLink to="/admin/hotels" style={adminLinkStyle}>
-            🏨 Hotels
+             Hotels
           </NavLink>
           <NavLink to="/admin/rooms" style={adminLinkStyle}>
-            🛏️ Rooms
+             Rooms
           </NavLink>
           <NavLink to="/admin/bookings" style={adminLinkStyle}>
-            📅 Bookings
+            Bookings
           </NavLink>
         </div>
 
