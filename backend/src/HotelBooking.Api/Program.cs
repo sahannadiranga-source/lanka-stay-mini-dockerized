@@ -74,6 +74,120 @@ app.MapGet("/api/hotels/{id:guid}/rooms", async (Guid id, AppDbContext db) =>
     return Results.Ok(rooms);
 });
 
+// ===== HOTEL CRUD =====
+app.MapPost("/api/hotels", async (CreateHotelRequest req, AppDbContext db) =>
+{
+    if (string.IsNullOrWhiteSpace(req.Name)) return Results.BadRequest("Name is required.");
+    if (string.IsNullOrWhiteSpace(req.Location)) return Results.BadRequest("Location is required.");
+
+    var hotel = new HotelBooking.Api.Models.Hotel
+    {
+        Name = req.Name.Trim(),
+        Location = req.Location.Trim(),
+        Description = string.IsNullOrWhiteSpace(req.Description) ? null : req.Description.Trim()
+    };
+
+    db.Hotels.Add(hotel);
+    await db.SaveChangesAsync();
+
+    var dto = new HotelDto(hotel.Id, hotel.Name, hotel.Location, hotel.Description);
+    return Results.Created($"/api/hotels/{hotel.Id}", dto);
+});
+
+app.MapPut("/api/hotels/{id:guid}", async (Guid id, UpdateHotelRequest req, AppDbContext db) =>
+{
+    var hotel = await db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+    if (hotel is null) return Results.NotFound();
+
+    if (string.IsNullOrWhiteSpace(req.Name)) return Results.BadRequest("Name is required.");
+    if (string.IsNullOrWhiteSpace(req.Location)) return Results.BadRequest("Location is required.");
+
+    hotel.Name = req.Name.Trim();
+    hotel.Location = req.Location.Trim();
+    hotel.Description = string.IsNullOrWhiteSpace(req.Description) ? null : req.Description.Trim();
+
+    await db.SaveChangesAsync();
+
+    var dto = new HotelDto(hotel.Id, hotel.Name, hotel.Location, hotel.Description);
+    return Results.Ok(dto);
+});
+
+app.MapDelete("/api/hotels/{id:guid}", async (Guid id, AppDbContext db) =>
+{
+    var hotel = await db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+    if (hotel is null) return Results.NotFound();
+
+    db.Hotels.Remove(hotel);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
+// ===== ROOM CRUD =====
+app.MapPost("/api/rooms", async (CreateRoomRequest req, AppDbContext db) =>
+{
+    if (req.HotelId == Guid.Empty) return Results.BadRequest("HotelId is required.");
+    if (string.IsNullOrWhiteSpace(req.Name)) return Results.BadRequest("Name is required.");
+    if (string.IsNullOrWhiteSpace(req.Type)) return Results.BadRequest("Type is required.");
+    if (req.PricePerNight <= 0) return Results.BadRequest("PricePerNight must be > 0.");
+    if (req.Capacity <= 0) return Results.BadRequest("Capacity must be > 0.");
+
+    var hotelExists = await db.Hotels.AnyAsync(h => h.Id == req.HotelId);
+    if (!hotelExists) return Results.BadRequest("Hotel not found.");
+
+    var room = new HotelBooking.Api.Models.Room
+    {
+        HotelId = req.HotelId,
+        Name = req.Name.Trim(),
+        Type = req.Type.Trim(),
+        PricePerNight = req.PricePerNight,
+        Capacity = req.Capacity
+    };
+
+    db.Rooms.Add(room);
+    await db.SaveChangesAsync();
+
+    var dto = new RoomDto(room.Id, room.HotelId, room.Name, room.Type, room.PricePerNight, room.Capacity);
+    return Results.Created($"/api/rooms/{room.Id}", dto);
+});
+
+app.MapPut("/api/rooms/{id:guid}", async (Guid id, UpdateRoomRequest req, AppDbContext db) =>
+{
+    var room = await db.Rooms.FirstOrDefaultAsync(r => r.Id == id);
+    if (room is null) return Results.NotFound();
+
+    if (req.HotelId == Guid.Empty) return Results.BadRequest("HotelId is required.");
+    if (string.IsNullOrWhiteSpace(req.Name)) return Results.BadRequest("Name is required.");
+    if (string.IsNullOrWhiteSpace(req.Type)) return Results.BadRequest("Type is required.");
+    if (req.PricePerNight <= 0) return Results.BadRequest("PricePerNight must be > 0.");
+    if (req.Capacity <= 0) return Results.BadRequest("Capacity must be > 0.");
+
+    var hotelExists = await db.Hotels.AnyAsync(h => h.Id == req.HotelId);
+    if (!hotelExists) return Results.BadRequest("Hotel not found.");
+
+    room.HotelId = req.HotelId;
+    room.Name = req.Name.Trim();
+    room.Type = req.Type.Trim();
+    room.PricePerNight = req.PricePerNight;
+    room.Capacity = req.Capacity;
+
+    await db.SaveChangesAsync();
+
+    var dto = new RoomDto(room.Id, room.HotelId, room.Name, room.Type, room.PricePerNight, room.Capacity);
+    return Results.Ok(dto);
+});
+
+app.MapDelete("/api/rooms/{id:guid}", async (Guid id, AppDbContext db) =>
+{
+    var room = await db.Rooms.FirstOrDefaultAsync(r => r.Id == id);
+    if (room is null) return Results.NotFound();
+
+    db.Rooms.Remove(room);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
 app.MapGet("/api/bookings", async (Guid? hotelId, AppDbContext db) =>
 {
     var q = db.Bookings.AsQueryable();

@@ -47,12 +47,23 @@ export default function RoomForm({
   }
 
   return (
-    <div style={{ padding: 14, border: "1px solid #ddd", borderRadius: 12 }}>
-      <h3 style={{ marginTop: 0 }}>{initial ? "Edit Room" : "Add Room"}</h3>
+    <div
+      style={{
+        padding: "1.5rem",
+        border: "2px solid var(--primary)",
+        borderRadius: "var(--radius-lg)",
+        background: "var(--gray-50)",
+      }}
+    >
+      <h3 style={{ marginTop: 0, marginBottom: "1.25rem" }}>
+        {initial ? "Edit Room" : "Add New Room"}
+      </h3>
 
-      <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ display: "grid", gap: "1rem" }}>
         <div>
-          <div style={{ fontSize: 12, marginBottom: 4 }}>Hotel</div>
+          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
+            Hotel <span style={{ color: "var(--danger)" }}>*</span>
+          </label>
           <select value={hotelId} onChange={(e) => setHotelId(e.target.value)}>
             {hotels.map((h) => (
               <option key={h.id} value={h.id}>
@@ -62,12 +73,33 @@ export default function RoomForm({
           </select>
         </div>
 
-        <input placeholder="Room name/number (e.g., 101)" value={name} onChange={(e) => setName(e.target.value)} />
-        <input placeholder="Type (e.g., Deluxe)" value={type} onChange={(e) => setType(e.target.value)} />
+        <div>
+          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
+            Room Name/Number <span style={{ color: "var(--danger)" }}>*</span>
+          </label>
+          <input
+            placeholder="e.g., 101, Suite A"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div>
+          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
+            Room Type <span style={{ color: "var(--danger)" }}>*</span>
+          </label>
+          <input
+            placeholder="e.g., Standard, Deluxe, Suite"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+          />
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div>
-            <div style={{ fontSize: 12, marginBottom: 4 }}>Price per night (LKR)</div>
+            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
+              Price per Night (LKR) <span style={{ color: "var(--danger)" }}>*</span>
+            </label>
             <input
               type="number"
               value={pricePerNight}
@@ -76,7 +108,9 @@ export default function RoomForm({
             />
           </div>
           <div>
-            <div style={{ fontSize: 12, marginBottom: 4 }}>Capacity</div>
+            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
+              Capacity (Guests) <span style={{ color: "var(--danger)" }}>*</span>
+            </label>
             <input
               type="number"
               value={capacity}
@@ -86,19 +120,13 @@ export default function RoomForm({
           </div>
         </div>
 
-        {error && <div style={{ padding: 10, background: "#f8d7da", borderRadius: 10 }}>{error}</div>}
+        {error && <div className="alert alert-error">{error}</div>}
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={submit}
-            style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid #ddd", cursor: "pointer" }}
-          >
-            Save
+        <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
+          <button onClick={submit} className="btn-primary">
+            {initial ? "Update Room" : "Create Room"}
           </button>
-          <button
-            onClick={onCancel}
-            style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid #ddd", cursor: "pointer" }}
-          >
+          <button onClick={onCancel} className="btn-secondary">
             Cancel
           </button>
         </div>
