@@ -22,15 +22,26 @@ services:
       dockerfile: backend/Dockerfile
     container_name: hotelbooking-api
     environment:
-    ASPNETCORE_ENVIRONMENT: Development
-    AdminKey: ${ADMIN_KEY}
-    ConnectionStrings__Default: Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
-   
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     ports:
       - "${API_PORT}:8080"
     depends_on:
       db:
         condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hotelbooking-frontend
+    environment:
+      VITE_API_BASE_URL: http://localhost:${API_PORT}
+      VITE_ADMIN_KEY: ${ADMIN_KEY}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
 
 volumes:
   pgdata:
