@@ -1,51 +1,72 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
-const adminLinkStyle = ({ isActive }: { isActive: boolean }): React.CSSProperties => ({
-  textDecoration: "none",
-  padding: "0.5rem 1rem",
-  borderRadius: "var(--radius-md)",
-  fontWeight: 500,
-  fontSize: "0.875rem",
-  background: isActive ? "var(--primary)" : "white",
-  color: isActive ? "white" : "var(--gray-700)",
-  border: "1px solid",
-  borderColor: isActive ? "var(--primary)" : "var(--gray-300)",
-  transition: "all 0.2s ease",
-  display: "inline-block",
-});
+const adminLinks = [
+  { to: "/admin/hotels", label: " Hotels" },
+  { to: "/admin/rooms", label: " Rooms" },
+  { to: "/admin/bookings", label: " Bookings" },
+];
 
 export default function AdminLayout() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh", background: "var(--color-bg)" }}>
       <Navbar />
-      <main style={{ flex: 1, maxWidth: "1200px", width: "100%", margin: "0 auto", padding: "var(--spacing-xl) var(--spacing-lg)" }}>
-        <div style={{ marginBottom: "var(--spacing-xl)" }}>
-          <h1 style={{ marginBottom: "0.5rem" }}>Admin Dashboard</h1>
-          <p style={{ color: "var(--gray-600)" }}>Manage hotels, rooms, and bookings</p>
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px 64px" }}>
+        {/* Admin Header */}
+        <div style={{ marginBottom: 28 }}>
+          <div
+            style={{
+              fontSize: "0.6875rem",
+              color: "var(--color-primary)",
+              textTransform: "uppercase",
+              letterSpacing: "0.12em",
+              fontWeight: 600,
+              marginBottom: 6,
+            }}
+          >
+            Dashboard
+          </div>
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "2rem",
+              fontWeight: 700,
+              margin: 0,
+            }}
+          >
+            Admin Panel
+          </h1>
         </div>
 
+        {/* Tab Nav */}
         <div
           style={{
             display: "flex",
-            gap: "var(--spacing-sm)",
-            marginBottom: "var(--spacing-xl)",
-            padding: "var(--spacing-sm)",
-            background: "white",
-            borderRadius: "var(--radius-lg)",
-            boxShadow: "var(--shadow-sm)",
-            border: "1px solid var(--gray-200)",
+            gap: 6,
+            marginBottom: 28,
+            borderBottom: "1px solid var(--color-border-light)",
+            paddingBottom: 0,
           }}
         >
-          <NavLink to="/admin/hotels" style={adminLinkStyle}>
-             Hotels
-          </NavLink>
-          <NavLink to="/admin/rooms" style={adminLinkStyle}>
-             Rooms
-          </NavLink>
-          <NavLink to="/admin/bookings" style={adminLinkStyle}>
-            Bookings
-          </NavLink>
+          {adminLinks.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              style={({ isActive }) => ({
+                textDecoration: "none",
+                padding: "10px 20px",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                color: isActive ? "var(--color-primary)" : "var(--color-text-secondary)",
+                borderBottom: isActive ? "2px solid var(--color-primary)" : "2px solid transparent",
+                marginBottom: -1,
+                transition: "all 200ms",
+              })}
+            >
+              {label}
+            </NavLink>
+          ))}
         </div>
 
         <Outlet />

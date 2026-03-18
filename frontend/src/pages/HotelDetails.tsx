@@ -8,6 +8,22 @@ import BookingForm from "../components/BookingForm";
 
 type HotelDetailsDto = Hotel & { rooms: Room[] };
 
+const LOCATION_IMAGES: Record<string, string> = {
+  galle:
+    "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1400&q=80&auto=format",
+  colombo:
+    "https://images.unsplash.com/photo-1580366132481-e8a2f42025e3?w=1400&q=80&auto=format",
+  "nuwara eliya":
+    "https://images.unsplash.com/photo-1586611292717-f828b167408c?w=1400&q=80&auto=format",
+};
+const FALLBACK_IMG =
+  "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1400&q=80&auto=format";
+
+function getHeroImage(location?: string) {
+  if (!location) return FALLBACK_IMG;
+  return LOCATION_IMAGES[location.toLowerCase().trim()] ?? FALLBACK_IMG;
+}
+
 export default function HotelDetails() {
   const { id } = useParams();
 
@@ -26,8 +42,6 @@ export default function HotelDetails() {
       try {
         setLoading(true);
         setError(null);
-
-        // Option A: get hotel + rooms in one call
         const details = await apiGet<HotelDetailsDto>(`/api/hotels/${id}`);
         setHotel({
           id: details.id,
@@ -48,195 +62,173 @@ export default function HotelDetails() {
 
   return (
     <div>
-      <Link
-        to="/"
+      {/* Hero banner */}
+      <section
+        className="animate-fade-in"
         style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "0.5rem",
-          color: "var(--primary)",
-          marginBottom: "1.5rem",
-          fontSize: "0.875rem",
-          fontWeight: 600,
+          position: "relative",
+          height: "clamp(260px, 38vh, 380px)",
+          background: `linear-gradient(180deg, rgba(15,23,42,0.35) 0%, rgba(15,23,42,0.7) 100%), url('${getHeroImage(hotel?.location)}') center/cover no-repeat`,
+          display: "flex",
+          alignItems: "flex-end",
+          padding: "0 24px 36px",
         }}
       >
-        ← Back to search results
-      </Link>
-
-      {loading && (
-        <div style={{ textAlign: "center", padding: "4rem 0", color: "var(--gray-500)" }}>
-          <div
+        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", position: "relative", zIndex: 1 }}>
+          <Link
+            to="/"
             style={{
-              width: "50px",
-              height: "50px",
-              border: "4px solid var(--gray-200)",
-              borderTop: "4px solid var(--primary)",
-              borderRadius: "50%",
-              margin: "0 auto 1rem",
-              animation: "spin 1s linear infinite",
-            }}
-          />
-          <p>Loading hotel details...</p>
-        </div>
-      )}
-
-      {error && <div className="alert alert-error">{error}</div>}
-
-      {!loading && !error && hotel && (
-        <>
-          {/* Hotel Header with Image Gallery */}
-          <div
-            style={{
-              background: "white",
-              borderRadius: "var(--radius-xl)",
-              overflow: "hidden",
-              marginBottom: "1.5rem",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "6px 16px",
+              borderRadius: "var(--radius-full)",
+              background: "rgba(255,255,255,0.15)",
+              backdropFilter: "blur(8px)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              color: "white",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              marginBottom: 16,
+              textDecoration: "none",
+              transition: "all 200ms",
             }}
           >
-            {/* Image Gallery */}
-            <div
-              style={{
-                height: "400px",
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "6rem",
-                position: "relative",
-              }}
-            >
-              🏨
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "1rem",
-                  right: "1rem",
-                  background: "white",
-                  padding: "0.5rem 1rem",
-                  borderRadius: "var(--radius-md)",
-                  fontSize: "0.875rem",
-                  fontWeight: 600,
-                  color: "var(--gray-700)",
-                  cursor: "pointer",
-                }}
-              >
-                📷 View all photos
-              </div>
-            </div>
+            ← Back to Hotels
+          </Link>
 
-            {/* Hotel Info */}
-            <div style={{ padding: "2rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "1rem" }}>
-                <div style={{ flex: 1 }}>
-                  <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>{title}</h1>
-                  
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.75rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span key={star} style={{ color: "#fbbf24", fontSize: "1.25rem" }}>★</span>
-                      ))}
-                    </div>
-                    <span style={{ color: "var(--gray-600)", fontSize: "0.875rem" }}>
-                      (128 reviews)
-                    </span>
-                  </div>
-                  
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
-                    <span style={{ color: "var(--gray-500)", fontSize: "1.25rem" }}>📍</span>
-                    <span style={{ color: "var(--gray-700)", fontWeight: 500, fontSize: "1rem" }}>
-                      {hotel.location}
-                    </span>
-                    <a href="#" style={{ color: "var(--primary)", fontSize: "0.875rem", marginLeft: "0.5rem" }}>
-                      Show on map
-                    </a>
-                  </div>
-                  
-                  {hotel.description && (
-                    <p style={{ fontSize: "1rem", lineHeight: 1.7, color: "var(--gray-600)", marginBottom: "1rem" }}>
-                      {hotel.description}
-                    </p>
-                  )}
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(1.75rem, 4vw, 2.75rem)",
+              fontWeight: 700,
+              color: "white",
+              textShadow: "0 2px 12px rgba(0,0,0,0.3)",
+              marginBottom: 8,
+            }}
+          >
+            {title}
+          </h1>
 
-                  {/* Amenities */}
-                  <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", marginTop: "1.5rem" }}>
-                    {["Free WiFi", "Pool", "Parking", "Restaurant", "Gym", "Spa"].map((amenity) => (
-                      <div key={amenity} style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--gray-700)", fontSize: "0.875rem" }}>
-                        <span style={{ color: "var(--success)" }}>✓</span>
-                        <span>{amenity}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Favorite Button */}
-                <button
+          {hotel && (
+            <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+              <span className="badge badge-accent" style={{ fontSize: "0.8125rem" }}>
+                 {hotel.location}
+              </span>
+              {hotel.description && (
+                <span
                   style={{
-                    background: "white",
-                    border: "1px solid var(--gray-300)",
-                    borderRadius: "var(--radius-md)",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "0.9rem",
                   }}
                 >
-                  ♡ Save
-                </button>
-              </div>
+                  {hotel.description}
+                </span>
+              )}
             </div>
+          )}
+        </div>
+      </section>
+
+      {/* Content */}
+      <section style={{ maxWidth: 1000, margin: "0 auto", padding: "40px 24px 80px" }}>
+        {/* Loading */}
+        {loading && (
+          <div className="loading-container">
+            <div className="spinner" />
+            <span>Loading hotel details…</span>
           </div>
+        )}
 
-          {message && <div className="alert alert-success">{message}</div>}
-
-          {/* Rooms Section */}
-          <div style={{ marginBottom: "1.5rem" }}>
-            <h2 style={{ fontSize: "1.75rem", marginBottom: "0.5rem" }}>Choose your room</h2>
-            <p style={{ color: "var(--gray-600)" }}>
-              {rooms.length} room {rooms.length === 1 ? "type" : "types"} available
-            </p>
+        {/* Error */}
+        {error && (
+          <div className="alert alert-error" style={{ marginBottom: 24 }}>
+            {error}
           </div>
+        )}
 
-          <div style={{ display: "grid", gap: "1rem" }}>
-            {rooms.map((room) => (
-              <RoomCard key={room.id} room={room} onBook={(r) => setSelectedRoom(r)} />
-            ))}
+        {/* Success message */}
+        {message && (
+          <div className="alert alert-success animate-fade-in" style={{ marginBottom: 24 }}>
+            {message}
           </div>
+        )}
 
-          {rooms.length === 0 && (
+        {!loading && !error && hotel && (
+          <>
+            {/* Rooms Header */}
+            <div style={{ marginBottom: 28 }}>
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--color-primary)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  fontWeight: 600,
+                  marginBottom: 6,
+                }}
+              >
+                Available Rooms
+              </div>
+              <h2
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "1.75rem",
+                  fontWeight: 700,
+                  marginBottom: 6,
+                }}
+              >
+                Choose Your Room
+              </h2>
+              <p style={{ fontSize: "0.9375rem" }}>
+                {rooms.length > 0
+                  ? `${rooms.length} room${rooms.length > 1 ? "s" : ""} available at this property.`
+                  : "No rooms are currently available."}
+              </p>
+            </div>
+
+            {/* Room Cards */}
             <div
+              className="stagger-children"
               style={{
-                textAlign: "center",
-                padding: "3rem 2rem",
-                background: "white",
-                borderRadius: "var(--radius-lg)",
-                color: "var(--gray-500)",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                gap: 20,
               }}
             >
-              <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🚫</div>
-              <h3 style={{ fontSize: "1.25rem", marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-                No rooms available
-              </h3>
-              <p>Please check back later or contact the hotel directly</p>
+              {rooms.map((room) => (
+                <RoomCard key={room.id} room={room} onBook={(r) => setSelectedRoom(r)} />
+              ))}
             </div>
-          )}
 
-          {selectedRoom && (
-            <BookingForm
-              room={selectedRoom}
-              onClose={() => setSelectedRoom(null)}
-              onSuccess={() => {
-                setSelectedRoom(null);
-                setMessage("🎉 Booking confirmed! Check your email for details.");
-                setTimeout(() => setMessage(null), 4000);
-              }}
-            />
-          )}
-        </>
-      )}
+            {rooms.length === 0 && (
+              <div
+                className="card-flat"
+                style={{
+                  textAlign: "center",
+                  padding: 48,
+                  color: "var(--color-text-muted)",
+                }}
+              >
+                No rooms found for this hotel.
+              </div>
+            )}
+
+            {/* Booking Modal */}
+            {selectedRoom && (
+              <BookingForm
+                room={selectedRoom}
+                onClose={() => setSelectedRoom(null)}
+                onSuccess={() => {
+                  setSelectedRoom(null);
+                  setMessage("Booking confirmed successfully! Check your email for details.");
+                  setTimeout(() => setMessage(null), 4000);
+                }}
+              />
+            )}
+          </>
+        )}
+      </section>
     </div>
   );
 }

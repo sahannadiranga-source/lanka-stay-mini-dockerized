@@ -34,61 +34,80 @@ export default function HotelForm({
   }
 
   return (
-    <div
-      style={{
-        padding: "1.5rem",
-        border: "2px solid var(--primary)",
-        borderRadius: "var(--radius-lg)",
-        background: "var(--gray-50)",
-      }}
-    >
-      <h3 style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-        {initial ? "Edit Hotel" : "Add New Hotel"}
+    <div className="card-flat" style={{ padding: 24 }}>
+      <h3
+        style={{
+          fontFamily: "var(--font-display)",
+          fontWeight: 600,
+          fontSize: "1.125rem",
+          marginBottom: 20,
+        }}
+      >
+        {initial ? "Edit Hotel" : "Add Hotel"}
       </h3>
 
-      <div style={{ display: "grid", gap: "1rem" }}>
+      <div style={{ display: "grid", gap: 14 }}>
         <div>
-          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-            Hotel Name <span style={{ color: "var(--danger)" }}>*</span>
+          <label
+            style={{
+              display: "block",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              color: "var(--color-text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Hotel Name *
           </label>
-          <input
-            placeholder="e.g., Grand Hotel"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input placeholder="e.g. Ocean View Hotel" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div>
-          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-            Location <span style={{ color: "var(--danger)" }}>*</span>
+          <label
+            style={{
+              display: "block",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              color: "var(--color-text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Location *
           </label>
           <input
-            placeholder="e.g., Colombo"
+            placeholder="e.g. Galle, Colombo, Nuwara Eliya"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
         </div>
 
         <div>
-          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-            Description
+          <label
+            style={{
+              display: "block",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              color: "var(--color-text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Description (optional)
           </label>
           <textarea
-            placeholder="Brief description of the hotel (optional)"
+            placeholder="Short description about the hotel…"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            style={{ resize: "vertical" }}
           />
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className="alert alert-error"> {error}</div>}
 
-        <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
-          <button onClick={submit} className="btn-primary">
-            {initial ? "Update Hotel" : "Create Hotel"}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button className="btn btn-primary btn-sm" onClick={submit}>
+            Save
           </button>
-          <button onClick={onCancel} className="btn-secondary">
+          <button className="btn btn-outline btn-sm" onClick={onCancel}>
             Cancel
           </button>
         </div>

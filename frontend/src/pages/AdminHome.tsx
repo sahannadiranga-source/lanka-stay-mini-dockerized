@@ -1,40 +1,69 @@
+import { Link } from "react-router-dom";
+
 export default function AdminHome() {
   return (
-    <div
-      style={{
-        background: "white",
-        borderRadius: "var(--radius-lg)",
-        padding: "var(--spacing-xl)",
-        boxShadow: "var(--shadow-sm)",
-        border: "1px solid var(--gray-200)",
-      }}
-    >
-      <div style={{ textAlign: "center", padding: "var(--spacing-2xl)" }}>
-        <div style={{ fontSize: "4rem", marginBottom: "var(--spacing-md)" }}>🎯</div>
-        <h2 style={{ marginBottom: "var(--spacing-md)" }}>Welcome to Admin Dashboard</h2>
-        <p style={{ color: "var(--gray-600)", fontSize: "1.125rem", marginBottom: "var(--spacing-lg)" }}>
-          Select a section from the navigation above to manage your hotel booking system
-        </p>
-        
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "var(--spacing-md)", marginTop: "var(--spacing-xl)" }}>
-          <div style={{ padding: "var(--spacing-lg)", background: "var(--gray-50)", borderRadius: "var(--radius-md)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🏨</div>
-            <div style={{ fontWeight: 600, color: "var(--gray-900)" }}>Hotels</div>
-            <div style={{ fontSize: "0.875rem", color: "var(--gray-600)" }}>Manage properties</div>
-          </div>
-          
-          <div style={{ padding: "var(--spacing-lg)", background: "var(--gray-50)", borderRadius: "var(--radius-md)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🛏️</div>
-            <div style={{ fontWeight: 600, color: "var(--gray-900)" }}>Rooms</div>
-            <div style={{ fontSize: "0.875rem", color: "var(--gray-600)" }}>Configure rooms</div>
-          </div>
-          
-          <div style={{ padding: "var(--spacing-lg)", background: "var(--gray-50)", borderRadius: "var(--radius-md)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📅</div>
-            <div style={{ fontWeight: 600, color: "var(--gray-900)" }}>Bookings</div>
-            <div style={{ fontSize: "0.875rem", color: "var(--gray-600)" }}>View reservations</div>
-          </div>
-        </div>
+    <div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: 20,
+        }}
+      >
+        {[
+          {
+            icon: "",
+            title: "Manage Hotels",
+            desc: "Add, edit, or remove hotel properties.",
+            to: "/admin/hotels",
+            color: "var(--color-primary)",
+          },
+          {
+            icon: "",
+            title: "Manage Rooms",
+            desc: "Configure rooms, pricing, and capacity.",
+            to: "/admin/rooms",
+            color: "var(--color-accent)",
+          },
+          {
+            icon: "",
+            title: "View Bookings",
+            desc: "Review all guest bookings and statuses.",
+            to: "/admin/bookings",
+            color: "var(--color-success)",
+          },
+        ].map((item) => (
+          <Link
+            key={item.title}
+            to={item.to}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div
+              className="card"
+              style={{
+                cursor: "pointer",
+                padding: "28px 24px",
+                textAlign: "center",
+              }}
+            >
+              <div style={{ fontSize: "2.5rem", marginBottom: 12 }}>{item.icon}</div>
+              <h3
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 600,
+                  fontSize: "1.125rem",
+                  marginBottom: 8,
+                  color: "var(--color-text)",
+                }}
+              >
+                {item.title}
+              </h3>
+              <p style={{ fontSize: "0.8125rem", color: "var(--color-text-secondary)" }}>
+                {item.desc}
+              </p>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

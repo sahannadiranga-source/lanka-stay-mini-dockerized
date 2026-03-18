@@ -47,22 +47,30 @@ export default function RoomForm({
   }
 
   return (
-    <div
-      style={{
-        padding: "1.5rem",
-        border: "2px solid var(--primary)",
-        borderRadius: "var(--radius-lg)",
-        background: "var(--gray-50)",
-      }}
-    >
-      <h3 style={{ marginTop: 0, marginBottom: "1.25rem" }}>
-        {initial ? "Edit Room" : "Add New Room"}
+    <div className="card-flat" style={{ padding: 24 }}>
+      <h3
+        style={{
+          fontFamily: "var(--font-display)",
+          fontWeight: 600,
+          fontSize: "1.125rem",
+          marginBottom: 20,
+        }}
+      >
+        {initial ? "Edit Room" : "Add Room"}
       </h3>
 
-      <div style={{ display: "grid", gap: "1rem" }}>
+      <div style={{ display: "grid", gap: 14 }}>
         <div>
-          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-            Hotel <span style={{ color: "var(--danger)" }}>*</span>
+          <label
+            style={{
+              display: "block",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              color: "var(--color-text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Hotel *
           </label>
           <select value={hotelId} onChange={(e) => setHotelId(e.target.value)}>
             {hotels.map((h) => (
@@ -74,31 +82,47 @@ export default function RoomForm({
         </div>
 
         <div>
-          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-            Room Name/Number <span style={{ color: "var(--danger)" }}>*</span>
+          <label
+            style={{
+              display: "block",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              color: "var(--color-text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Room Name / Number *
           </label>
-          <input
-            placeholder="e.g., 101, Suite A"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input placeholder="e.g. 101" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div>
-          <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-            Room Type <span style={{ color: "var(--danger)" }}>*</span>
+          <label
+            style={{
+              display: "block",
+              fontSize: "0.8125rem",
+              fontWeight: 500,
+              color: "var(--color-text-secondary)",
+              marginBottom: 6,
+            }}
+          >
+            Room Type *
           </label>
-          <input
-            placeholder="e.g., Standard, Deluxe, Suite"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-          />
+          <input placeholder="e.g. Deluxe, Suite, Standard" value={type} onChange={(e) => setType(e.target.value)} />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           <div>
-            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-              Price per Night (LKR) <span style={{ color: "var(--danger)" }}>*</span>
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.8125rem",
+                fontWeight: 500,
+                color: "var(--color-text-secondary)",
+                marginBottom: 6,
+              }}
+            >
+              Price per night (LKR)
             </label>
             <input
               type="number"
@@ -108,8 +132,16 @@ export default function RoomForm({
             />
           </div>
           <div>
-            <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, marginBottom: "0.5rem", color: "var(--gray-700)" }}>
-              Capacity (Guests) <span style={{ color: "var(--danger)" }}>*</span>
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.8125rem",
+                fontWeight: 500,
+                color: "var(--color-text-secondary)",
+                marginBottom: 6,
+              }}
+            >
+              Capacity
             </label>
             <input
               type="number"
@@ -120,13 +152,13 @@ export default function RoomForm({
           </div>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className="alert alert-error"> {error}</div>}
 
-        <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
-          <button onClick={submit} className="btn-primary">
-            {initial ? "Update Room" : "Create Room"}
+        <div style={{ display: "flex", gap: 10 }}>
+          <button className="btn btn-primary btn-sm" onClick={submit}>
+            Save
           </button>
-          <button onClick={onCancel} className="btn-secondary">
+          <button className="btn btn-outline btn-sm" onClick={onCancel}>
             Cancel
           </button>
         </div>
