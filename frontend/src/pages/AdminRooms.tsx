@@ -1,20 +1,36 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Hotel } from "../types/hotel";
 import type { Room } from "../types/room";
-import { mockHotels as seedHotels, mockRooms as seedRooms } from "../data/mockData";
+import { apiGet } from "../api/client";
 import RoomForm from "../components/RoomForm";
 
-function newId() {
-  return crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
-}
-
 export default function AdminRooms() {
-  const [hotels] = useState<Hotel[]>(seedHotels);
-  const [rooms, setRooms] = useState<Room[]>(seedRooms);
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [editing, setEditing] = useState<Room | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const hotelsData = await apiGet<Hotel[]>("/api/hotels");
+        setHotels(hotelsData);
+
+        // Load rooms from each hotel
+        const roomLists = await Promise.all(
+          hotelsData.map((h) => apiGet<{ rooms: Room[] }>(`/api/hotels/${h.id}`))
+        );
+        setRooms(roomLists.flatMap((r) => r.rooms));
+      } catch {
+        // silent
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   const roomsWithHotel = useMemo(() => {
     const map = new Map(hotels.map((h) => [h.id, h]));
@@ -23,11 +39,11 @@ export default function AdminRooms() {
 
   function flash(msg: string) {
     setMessage(msg);
-    setTimeout(() => setMessage(null), 2000);
+    setTimeout(() => setMessage(null), 2500);
   }
 
   function addRoom(payload: Omit<Room, "id">) {
-    const room: Room = { id: newId(), ...payload };
+    const room: Room = { id: crypto.randomUUID(), ...payload };
     setRooms((prev) => [room, ...prev]);
     setShowForm(false);
     flash("Room added (mock).");
@@ -42,78 +58,132 @@ export default function AdminRooms() {
   }
 
   function removeRoom(id: string) {
-    const ok = confirm("Delete this room? (mock)");
+    const ok = confirm("Delete this room?");
     if (!ok) return;
     setRooms((prev) => prev.filter((r) => r.id !== id));
     flash("Room deleted (mock).");
   }
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
-        <h2 style={{ margin: 0 }}>Manage Rooms</h2>
+    <div>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 12,
+          marginBottom: 24,
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            margin: 0,
+          }}
+        >
+          Manage Rooms
+        </h2>
         <button
+          className="btn btn-primary btn-sm"
           onClick={() => {
             setEditing(null);
             setShowForm(true);
           }}
-          style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid #ddd", cursor: "pointer" }}
         >
           + Add Room
         </button>
       </div>
 
+      {/* Flash */}
       {message && (
-        <div style={{ padding: 12, background: "#d1e7dd", borderRadius: 10 }}>
+        <div className="alert alert-success animate-fade-in" style={{ marginBottom: 20 }}>
           {message}
         </div>
       )}
 
+      {/* Form */}
       {showForm && (
-        <RoomForm
-          hotels={hotels}
-          initial={editing}
-          onCancel={() => {
-            setEditing(null);
-            setShowForm(false);
-          }}
-          onSave={(payload) => {
-            if (editing) updateRoom(payload);
-            else addRoom(payload);
-          }}
-        />
+        <div className="animate-fade-in" style={{ marginBottom: 20 }}>
+          <RoomForm
+            hotels={hotels}
+            initial={editing}
+            onCancel={() => {
+              setEditing(null);
+              setShowForm(false);
+            }}
+            onSave={(payload) => {
+              if (editing) updateRoom(payload);
+              else addRoom(payload);
+            }}
+          />
+        </div>
       )}
 
-      <div style={{ display: "grid", gap: 10 }}>
+      {/* Loading */}
+      {loading && (
+        <div className="loading-container">
+          <div className="spinner" />
+          <span>Loading rooms…</span>
+        </div>
+      )}
+
+      {/* Rooms list */}
+      <div className="stagger-children" style={{ display: "grid", gap: 14 }}>
         {roomsWithHotel.map(({ room, hotel }) => (
-          <div key={room.id} style={{ padding: 14, border: "1px solid #ddd", borderRadius: 12 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+          <div key={room.id} className="card" style={{ padding: "20px 24px" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: 16,
+              }}
+            >
               <div>
-                <b style={{ fontSize: 18 }}>
+                <div
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 600,
+                    fontSize: "1.05rem",
+                    marginBottom: 6,
+                  }}
+                >
                   Room {room.name} • {room.type}
-                </b>
-                <div style={{ marginTop: 4 }}>
-                  <b>Hotel:</b> {hotel ? `${hotel.name} (${hotel.location})` : "Unknown"}
                 </div>
-                <div style={{ marginTop: 4 }}>
-                  <b>Capacity:</b> {room.capacity} • <b>Price:</b> LKR {room.pricePerNight.toLocaleString()}
+                <div
+                  style={{
+                    fontSize: "0.8125rem",
+                    color: "var(--color-text-secondary)",
+                    display: "flex",
+                    gap: 16,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <span> {hotel ? `${hotel.name} (${hotel.location})` : "Unknown"}</span>
+                  <span>👥 {room.capacity} guests</span>
+                  <span style={{ fontWeight: 600, color: "var(--color-primary)" }}>
+                    LKR {room.pricePerNight.toLocaleString()}/night
+                  </span>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 10, alignItems: "start" }}>
+              <div style={{ display: "flex", gap: 8 }}>
                 <button
+                  className="btn btn-outline btn-sm"
                   onClick={() => {
                     setEditing(room);
                     setShowForm(true);
                   }}
-                  style={{ padding: "8px 10px", borderRadius: 10, border: "1px solid #ddd", cursor: "pointer" }}
                 >
                   Edit
                 </button>
-
                 <button
+                  className="btn btn-ghost btn-sm"
                   onClick={() => removeRoom(room.id)}
-                  style={{ padding: "8px 10px", borderRadius: 10, border: "1px solid #ddd", cursor: "pointer" }}
+                  style={{ color: "var(--color-error)" }}
                 >
                   Delete
                 </button>
@@ -123,8 +193,8 @@ export default function AdminRooms() {
         ))}
       </div>
 
-      <div style={{ fontSize: 12, color: "#666" }}>
-        Note: This page uses mock state. Next we will connect it to the .NET API.
+      <div style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginTop: 24 }}>
+        Note: Add/Edit/Delete uses mock state. Next: connect to the .NET API.
       </div>
     </div>
   );

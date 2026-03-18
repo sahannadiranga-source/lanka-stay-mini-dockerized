@@ -13,3 +13,6 @@ Full-stack mini hotel booking system using:
 
 ## Run 
 `docker-compose up --build`
+
+By default, the UI will be accessible at http://localhost:5173 
+Note: The Admin Panel is deliberately hidden from the main navigation menu. To access it, navigate directly to **http://localhost:5173/admin**.
