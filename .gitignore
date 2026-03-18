@@ -4,9 +4,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Env files
-.env
-**/.env
+
 
 # Node
 node_modules/
