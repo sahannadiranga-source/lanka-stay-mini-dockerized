@@ -33,29 +33,21 @@ export default function Home() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-        setError(null);
         const data = await apiGet<Hotel[]>("/api/hotels");
         setHotels(data);
+        setError(null);
       } catch (e: any) {
-        console.error("Failed to load hotels:", e);
         setError(e?.message ?? "Failed to load hotels.");
       } finally {
         setLoading(false);
       }
     })();
   }, []);
-
-  const filteredHotels = hotels.filter(
-    (h) =>
-      h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      h.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div>

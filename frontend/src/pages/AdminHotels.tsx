@@ -40,29 +40,21 @@ export default function AdminHotels() {
     flash("Hotel added (mock).");
   }
 
-  async function updateHotelData(payload: Omit<Hotel, "id">) {
+  function updateHotel(payload: Omit<Hotel, "id">) {
     if (!editing) return;
-    try {
-      await updateHotel(editing.id, payload);
-      await loadHotels();
-      setEditing(null);
-      setShowForm(false);
-      flash("✅ Hotel updated successfully!");
-    } catch (e: any) {
-      flash(`❌ Error: ${e?.message ?? "Failed to update hotel"}`);
-    }
+    setHotels((prev) =>
+      prev.map((h) => (h.id === editing.id ? { ...h, ...payload } : h))
+    );
+    setEditing(null);
+    setShowForm(false);
+    flash("Hotel updated (mock).");
   }
 
   function removeHotel(id: string) {
     const ok = confirm("Delete this hotel?");
     if (!ok) return;
-    try {
-      await deleteHotel(id);
-      await loadHotels();
-      flash("✅ Hotel deleted successfully!");
-    } catch (e: any) {
-      flash(`❌ Error: ${e?.message ?? "Failed to delete hotel"}`);
-    }
+    setHotels((prev) => prev.filter((h) => h.id !== id));
+    flash("Hotel deleted (mock).");
   }
 
   return (
