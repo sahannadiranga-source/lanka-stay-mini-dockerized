@@ -70,7 +70,7 @@ export default function AdminLayout() {
         </div>
 
         <Outlet />
-      </main>
+  </div>
     </div>
   );
 }
